@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.4.0/dist/confetti.browser.min.js"></script>
+<script type="module" src="https://unpkg.com/@splinetool/viewer@1.9.28/build/spline-viewer.js"></script>
+<style>
+body {
+  background-color: #E1E0d6;
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  margin: 0;
+}
+
+header {
+  text-align: center;
+}
+
+footer {
+  text-align: center;
+  margin-top: 20px;
+}
+
+main {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-grow: 1;
+}
+
+div.flex-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 40px; /* Space between text-button and Spline viewer */
+}
+
+div.text-container {
+  display: flex;
+  margin-top:0px;
+  flex-direction: column;
+  align-items:center;
+}
+
+div.spline-container {
+  width: 600px;
+  height: 600px;
+}
+
+p {
+  font-size: 40px;
+  margin: 0;
+  height:100px;
+  font-weight:bold;
+  font-family: Copperplate, Papyrus, fantasy;
+}
+
+.btn {
+  width: 14em;
+  height: 5em;
+  margin-top:10px;
+  border-radius: 5em;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #1C1A1C;
+  cursor: pointer;
+  transition: all 450ms ease-in-out;
+}
+.sparkle {
+  fill: #FFA500;
+  transition: all 800ms ease;
+}
+
+.text {
+  font-weight: 600;
+  color: #AAAAAA;
+  font-size:17px;
+  font-family: Copperplate, Papyrus, fantasy;
+}
+.btn:hover {
+  background: linear-gradient(0deg,#FFA500,#FFA500);
+  box-shadow: inset 0px 1px 0px 0px rgba(255, 255, 255, 0.4),
+  inset 0px -4px 0px 0px rgba(0, 0, 0, 0.2),
+  0px 0px 0px 4px rgba(255, 255, 255, 0.2),
+  0px 0px 180px 0px #FFA500;
+  transform: translateY(-2px);
+}
+
+.btn:hover .text {
+  color: white;
+}
+.btn:hover .sparkle {
+  fill: white;
+  transform: scale(1.2);
+}
+.btn1 {
+  width: 12em;
+  height: 4em;
+  border-radius: 5em;
+  justify-content: center;
+  align-items: center;
+  background: #1C1A1C;
+  cursor: pointer;
+  transition: all 450ms ease-in-out;
+}
+.btn1:hover {
+  background: linear-gradient(0deg,#FFA500,#FFA500);
+  box-shadow: inset 0px 1px 0px 0px rgba(255, 255, 255, 0.4),
+  inset 0px -4px 0px 0px rgba(0, 0, 0, 0.2),
+  0px 0px 0px 4px rgba(255, 255, 255, 0.2),
+  0px 0px 180px 0px #FFA500;
+  transform: translateY(-2px);
+}
+.btn1:hover .text {
+  color: white;
+}
+.btn2 {
+  width: 15em;
+  height: 6em;
+  margin-top:40px;
+  border-radius: 5em;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #1C1A1C;
+  cursor: pointer;
+  transition: all 450ms ease-in-out;
+}
+.sparkle {
+  fill: #FFA500;
+  transition: all 800ms ease;
+}
+
+.restart-text{
+  font-weight: 600;
+  color: #AAAAAA;
+  font-size:19px;
+  font-family: Copperplate, Papyrus, fantasy;
+}
+.btn2:hover {
+  background: linear-gradient(0deg,#FFA500,#FFA500);
+  box-shadow: inset 0px 1px 0px 0px rgba(255, 255, 255, 0.4),
+  inset 0px -4px 0px 0px rgba(0, 0, 0, 0.2),
+  0px 0px 0px 4px rgba(255, 255, 255, 0.2),
+  0px 0px 180px 0px #FFA500;
+  transform: translateY(-2px);
+}
+
+.btn2:hover .restart-text{
+  color: white;
+}
+.btn2:hover .sparkle {
+  fill: white;
+  transform: scale(1.2);
+}
+.guss-text{
+	font-size:65px;
+	height:150px;
+	color:#FFA500;
+    font-weight:bold;
+    font-family: Copperplate, Papyrus, fantasy;
+}
+.won-text{
+	font-size:45px;
+	height:150px;
+	text-align:center;
+    font-weight:bold;
+    font-family: Copperplate, Papyrus, fantasy;
+}
+</style>
+<script>
+    function change() {
+      fetch('process.php', {
+        method: 'POST',
+        body: JSON.stringify({ action: 'guess' }),
+        headers: { 'Content-Type': 'application/json' }
+      })
+      .then(response => response.json())
+      .then(data => {
+        document.getElementById("myDiv").innerHTML = `
+          <p>Is this the number you chose:</p>
+		  <p class="guss-text"> ${data.mid}</p>
+          <form>
+            <button class="btn1" type="button" onclick="guess('less')"><span class="text">LESS</span></button>
+            <button class="btn1" type="button" onclick="guess('equal')"><span class="text">EQUAL</span></button>
+            <button class="btn1" type="button" onclick="guess('greater')"><span class="text">GREATER</span></button>
+          </form>`;
+      });
+    }
+    function guess(choice) {
+      fetch('process.php', {
+        method: 'POST',
+        body: JSON.stringify({ action: choice }),
+        headers: { 'Content-Type': 'application/json' }
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.result === 'win') {
+	  const end = Date.now() + 3 * 1000;
+      const colors = ["#a786ff", "#FFA500", "#eca184", "#f8deb1"];
+
+      const frame = () => {
+        if (Date.now() > end) return;
+
+        confetti({
+          particleCount: 4,
+          angle: 60,
+          spread: 65,
+          startVelocity: 70,
+          origin: { x: 0, y: 0.75 },
+          colors: colors,
+        });
+        confetti({
+          particleCount: 4,
+          angle: 120,
+          spread: 65,
+          startVelocity: 70,
+          origin: { x: 1, y: 0.75 },
+		   colors: colors,
+        });
+
+        requestAnimationFrame(frame);
+      };
+
+      frame();
+          document.getElementById("myDiv").innerHTML = `<p class="won-text">I won! Your number is: ${data.mid}!<br>I guessed it in ${data.moves} moves -.-</p>
+		  <button class="btn2" type="button" onclick="restartGame()">
+          <svg height="24" width="24" fill="#FFFFFF" viewBox="0 0 24 24" data-name="Layer 1" id="Layer_1" class="sparkle">
+            <path d="M10,21.236,6.755,14.745.264,11.5,6.755,8.255,10,1.764l3.245,6.491L19.736,11.5l-6.491,3.245ZM18,21l1.5,3L21,21l3-1.5L21,18l-1.5-3L18,18l-3,1.5ZM19.333,4.667,20.5,7l1.167-2.333L24,3.5,21.667,2.333,20.5,0,19.333,2.333,17,3.5Z"></path>
+          </svg>
+          <span class="restart-text">Restart Game</span></button>`;
+        } else {
+          change();
+        }
+      });
+    }
+	function restartGame() {
+  fetch('process.php', {
+    method: 'POST',
+    body: JSON.stringify({ action: 'restart' }),
+    headers: { 'Content-Type': 'application/json' }
+  })
+  .then(() => {
+    document.getElementById("myDiv").innerHTML = `
+      <p>Choose an integer between 1 and 1000</p>
+      <form method="post" action="">
+        <button type="button" onclick="change()" class="btn">
+          <svg height="24" width="24" fill="#FFFFFF" viewBox="0 0 24 24" data-name="Layer 1" id="Layer_1" class="sparkle">
+            <path d="M10,21.236,6.755,14.745.264,11.5,6.755,8.255,10,1.764l3.245,6.491L19.736,11.5l-6.491,3.245ZM18,21l1.5,3L21,21l3-1.5L21,18l-1.5-3L18,18l-3,1.5ZM19.333,4.667,20.5,7l1.167-2.333L24,3.5,21.667,2.333,20.5,0,19.333,2.333,17,3.5Z"></path>
+          </svg>
+          <span class="text">GUSS</span>
+        </button>
+      </form>
+    `;
+  });
+}
+  </script>
+<title>GUSS GAME</title>
+</head>
+<body>
+
+<header>
+  <img class="photo1" src="photo/p1-removebg-preview.png" alt="ieee" width="1535" height="200">
+</header>
+
+<main>
+  <div class="flex-container">
+    <div class="text-container" id="myDiv">
+      <p>Choose an integer between 1 and 1000</p>
+      <form method="post" action="">
+        <button type="button" onclick="change()" class="btn">
+          <svg height="24" width="24" fill="#FFFFFF" viewBox="0 0 24 24" data-name="Layer 1" id="Layer_1" class="sparkle">
+              <path d="M10,21.236,6.755,14.745.264,11.5,6.755,8.255,10,1.764l3.245,6.491L19.736,11.5l-6.491,3.245ZM18,21l1.5,3L21,21l3-1.5L21,18l-1.5-3L18,18l-3,1.5ZM19.333,4.667,20.5,7l1.167-2.333L24,3.5,21.667,2.333,20.5,0,19.333,2.333,17,3.5Z"></path>
+          </svg>
+          <span class="text">GUSS</span>
+        </button>
+      </form>
+    </div>
+
+    <div class="spline-container">
+      <spline-viewer url="https://prod.spline.design/jUwHLsSNyKkUmwux/scene.splinecode"></spline-viewer>
+    </div>
+  </div>
+</main>
+<footer>
+  <img src="photo/p2.jpg" alt="ieee" width="1535" height="60">
+</footer>
+</body>
+</html>
